@@ -1,76 +1,165 @@
-# import streamlit as st
-# import pandas as pd
-# import joblib
-# import os
-
-# print(os.listdir())
-# # Load Model
-# model = joblib.load(
-#     "attrition_model_v2.pkl"
-# )
-
-# THRESHOLD = 0.40
-
-# st.set_page_config(
-#     page_title="Employee Attrition Predictor",
-#     layout="wide"
-# )
-
-# st.title("AI Powered Employee Attrition Prediction System")
-
-# st.write(
-#     "Predict employee attrition risk using Machine Learning"
-# )
-
-
 import streamlit as st
 import pandas as pd
 import joblib
 import traceback
 
-# -----------------------------
+# =====================================================
 # PAGE CONFIG
-# -----------------------------
+# =====================================================
+
 st.set_page_config(
-    page_title="Employee Attrition Predictor",
+    page_title="Employee Attrition Intelligence Dashboard",
     page_icon="📊",
     layout="wide"
 )
 
-# -----------------------------
+# =====================================================
+# CUSTOM CSS
+# =====================================================
+
+st.markdown("""
+<style>
+
+.main {
+    background-color: #f8fafc;
+}
+
+.hero {
+    background: linear-gradient(135deg,#1e3a8a,#2563eb);
+    padding: 30px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.section-header {
+    background: white;
+    padding: 12px;
+    border-radius: 10px;
+    border-left: 6px solid #2563eb;
+    margin-bottom: 15px;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+}
+
+.metric-container {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.08);
+}
+
+.low-risk {
+    background:#dcfce7;
+    color:#166534;
+    padding:15px;
+    border-radius:12px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.medium-risk {
+    background:#fef9c3;
+    color:#854d0e;
+    padding:15px;
+    border-radius:12px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.high-risk {
+    background:#fee2e2;
+    color:#991b1b;
+    padding:15px;
+    border-radius:12px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.stButton>button {
+    width:100%;
+    height:60px;
+    font-size:20px;
+    font-weight:bold;
+    border-radius:12px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# =====================================================
 # LOAD MODEL
-# -----------------------------
+# =====================================================
+
 try:
     model = joblib.load("attrition_model_v2.pkl")
-    st.success("✅ Model Loaded Successfully")
 
-except Exception as e:
+except Exception:
     st.error("❌ Model Loading Failed")
     st.code(traceback.format_exc())
     st.stop()
 
-# -----------------------------
-# THRESHOLD
-# -----------------------------
-THRESHOLD = 0.40
+# =====================================================
+# SIDEBAR
+# =====================================================
 
-# -----------------------------
-# TITLE
-# -----------------------------
-st.title("AI Powered Employee Attrition Prediction System")
+with st.sidebar:
+
+    st.title("📊 HR Analytics")
+
+    st.success("Model Loaded Successfully")
+
+    st.markdown("---")
+
+    st.info("""
+    Employee Attrition Intelligence System
+
+    Predict employee resignation risk using
+    Machine Learning and HR Analytics.
+    """)
+
+    st.markdown("---")
+
+    st.metric(
+        "Prediction Threshold",
+        "40%"
+    )
+
+    st.metric(
+        "Model Status",
+        "Active"
+    )
+
+# =====================================================
+# HEADER
+# =====================================================
 
 st.markdown("""
-Predict employee attrition risk using Machine Learning.
+<div class="hero">
+    <h1>📊 Employee Attrition Intelligence Dashboard</h1>
+    <h4>AI Powered Workforce Retention Analytics</h4>
+    <p>
+    Predict employee attrition risk and identify employees
+    likely to leave the organization.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
-This system analyzes employee information and estimates the probability of attrition.
-""")
+# =====================================================
+# THRESHOLD
+# =====================================================
 
-st.divider()
+THRESHOLD = 0.40
 
-# -----------------------------
+# =====================================================
 # INPUT SECTION
-# -----------------------------
-st.header("Employee Information")
+# =====================================================
+
+st.markdown("""
+<div class="section-header">
+<h3>👨‍💼 Employee Information</h3>
+</div>
+""", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
@@ -86,7 +175,7 @@ with col1:
     monthly_income = st.number_input(
         "Monthly Income",
         min_value=1000,
-        max_value=25000,
+        max_value=50000,
         value=5000
     )
 
@@ -150,12 +239,17 @@ with col2:
         [1, 2, 3, 4]
     )
 
-st.divider()
+st.markdown("<br>", unsafe_allow_html=True)
 
-# -----------------------------
-# PREDICTION BUTTON
-# -----------------------------
-if st.button("🔍 Predict Attrition Risk"):
+predict = st.button(
+    "🚀 Analyze Employee Attrition Risk"
+)
+
+# =====================================================
+# PREDICTION
+# =====================================================
+
+if predict:
 
     employee = pd.DataFrame([{
         'Age': age,
@@ -194,25 +288,24 @@ if st.button("🔍 Predict Attrition Risk"):
 
         probability = model.predict_proba(employee)[0][1]
 
-        prediction = int(
-            probability >= THRESHOLD
-        )
+        prediction = int(probability >= THRESHOLD)
 
         if probability < 0.30:
             risk = "Low Risk"
-            color = "🟢"
 
         elif probability < 0.70:
             risk = "Medium Risk"
-            color = "🟡"
 
         else:
             risk = "High Risk"
-            color = "🔴"
 
-        st.divider()
+        st.markdown("---")
 
-        st.header("Prediction Results")
+        st.markdown("""
+        <div class="section-header">
+        <h3>📈 Prediction Dashboard</h3>
+        </div>
+        """, unsafe_allow_html=True)
 
         c1, c2, c3 = st.columns(3)
 
@@ -225,7 +318,9 @@ if st.button("🔍 Predict Attrition Risk"):
         with c2:
             st.metric(
                 "Prediction",
-                "Likely To Leave" if prediction == 1 else "Likely To Stay"
+                "Likely To Leave"
+                if prediction == 1
+                else "Likely To Stay"
             )
 
         with c3:
@@ -234,49 +329,90 @@ if st.button("🔍 Predict Attrition Risk"):
                 risk
             )
 
+        st.subheader("📊 Attrition Risk Meter")
+
         st.progress(float(probability))
 
-        st.subheader(f"{color} {risk}")
+        st.caption(
+            f"Risk Score: {probability*100:.2f}%"
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
 
         if risk == "High Risk":
 
-            st.error("""
-            Employee shows a strong probability of attrition.
-
-            Suggested Actions:
-            - HR discussion
-            - Salary review
-            - Workload review
-            - Engagement survey
-            """)
+            st.markdown("""
+            <div class="high-risk">
+            🔴 HIGH RISK EMPLOYEE
+            <br><br>
+            Immediate HR intervention recommended.
+            </div>
+            """, unsafe_allow_html=True)
 
         elif risk == "Medium Risk":
 
-            st.warning("""
-            Employee may be at moderate attrition risk.
-
-            Suggested Actions:
-            - Monitor satisfaction
-            - Conduct periodic check-ins
-            - Review career growth opportunities
-            """)
+            st.markdown("""
+            <div class="medium-risk">
+            🟡 MEDIUM RISK EMPLOYEE
+            <br><br>
+            Employee engagement monitoring recommended.
+            </div>
+            """, unsafe_allow_html=True)
 
         else:
 
-            st.success("""
-            Employee appears stable.
+            st.markdown("""
+            <div class="low-risk">
+            🟢 LOW RISK EMPLOYEE
+            <br><br>
+            Employee appears stable and engaged.
+            </div>
+            """, unsafe_allow_html=True)
 
-            Suggested Actions:
-            - Continue engagement
-            - Maintain satisfaction levels
-            """)
+        st.markdown("<br>", unsafe_allow_html=True)
 
-        st.subheader("Employee Summary")
+        st.subheader("📋 Employee Snapshot")
 
-        st.dataframe(employee)
+        summary = pd.DataFrame({
+            "Feature": [
+                "Age",
+                "Monthly Income",
+                "Department",
+                "Gender",
+                "Years At Company",
+                "Total Working Years",
+                "Work Life Balance",
+                "Job Satisfaction"
+            ],
+            "Value": [
+                age,
+                monthly_income,
+                department,
+                gender,
+                years_at_company,
+                total_working_years,
+                work_life_balance,
+                job_satisfaction
+            ]
+        })
 
-    except Exception as e:
+        st.dataframe(
+            summary,
+            use_container_width=True,
+            hide_index=True
+        )
 
-        st.error("Prediction Failed")
+        with st.expander("🔍 View Model Input Data"):
 
-        st.code(traceback.format_exc())
+            st.dataframe(
+                employee,
+                use_container_width=True
+            )
+
+    except Exception:
+
+        st.error("❌ Prediction Failed")
+
+        st.code(
+            traceback.format_exc()
+        )
