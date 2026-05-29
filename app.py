@@ -1,9 +1,13 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import os
 
+print(os.listdir())
 # Load Model
-model = joblib.load("attrition_model.pkl")
+model = joblib.load(
+    "attrition_model_v2.pkl"
+)
 
 THRESHOLD = 0.40
 
